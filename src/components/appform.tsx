@@ -1,15 +1,17 @@
-import React, {Component} from 'react';
-import { RJSFSchema } from "@rjsf/utils";
-import validator from "@rjsf/validator-ajv8";
-import Form from "@rjsf/material-ui";
+import { Box } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
-import {Box} from "@material-ui/core";
+import { IChangeEvent } from '@rjsf/core';
+import Form from '@rjsf/material-ui';
+import { RJSFSchema } from '@rjsf/utils';
+import validator from '@rjsf/validator-ajv8';
+import React, { Component, FormEvent } from 'react';
 
 interface AppFormProps {
   api: String;
   token: String;
-  maxWidth: false | "xs" | "sm" | "md" | "lg" | "xl";
+  maxWidth: false | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
+
 interface AppFormState {
   schema: RJSFSchema;
   submitted: boolean;
@@ -24,16 +26,16 @@ export class AppForm extends Component<AppFormProps, AppFormState> {
   }
 
   componentDidMount() {
-    void this.GetSchema();
+    void this.getSchema();
   }
 
   componentDidUpdate(prevProps: Readonly<AppFormProps>, prevState: Readonly<AppFormState>) {
     if (prevProps.token !== this.props.token) {
-      void this.GetSchema();
+      void this.getSchema();
     }
   }
 
-  GetSchema = async () => {
+  getSchema = async (): Promise<void> => {
     const { api, token } = this.props;
     if (token) {
       try {
@@ -55,8 +57,7 @@ export class AppForm extends Component<AppFormProps, AppFormState> {
     }
   };
 
-  // @ts-ignore
-  handleSubmit = async ({formData}, e) => {
+  handleSubmit = async ({ formData }: IChangeEvent, event: FormEvent) => {
     const { api, token } = this.props;
     try {
       const response = await fetch(
@@ -70,9 +71,9 @@ export class AppForm extends Component<AppFormProps, AppFormState> {
           body: JSON.stringify(formData),
         },
       );
-      this.setState({submitted: true, response: await response.json()})
+      this.setState({ submitted: true, response: await response.json() })
     } catch (e) {
-      console.log("Error: ", e);
+      console.log('Error: ', e);
     }
   }
 
@@ -83,7 +84,7 @@ export class AppForm extends Component<AppFormProps, AppFormState> {
           <Form schema={this.state.schema}
                 validator={validator}
                 onSubmit={this.handleSubmit}
-                liveValidate />
+                liveValidate/>
         </Box>
         {this.state.submitted &&
             <Box component="pre">
